@@ -25,9 +25,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Brand CRUD Routes
     Route::resource('brands', BrandController::class);
-    
+        
+    // Size CRUD Routes
+    Route::resource('sizes', SizeController::class);
+
+
     // Product CRUD Routes (resource)
-    Route::resource('/products', ProductController::class);
+    Route::resource('products', ProductController::class);
+
+
+
 });
 
 // Get Authenticated User
