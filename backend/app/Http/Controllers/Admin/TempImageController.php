@@ -7,8 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\Tempimages;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class TempImageController extends Controller
 {
@@ -38,13 +37,11 @@ class TempImageController extends Controller
 
         // Create thumbnail (Intervention v3 syntax)
         try {
-            $manager = new ImageManager(new Driver());
-            $img = $manager->read(public_path('upload/temp/' . $imageName));
+            $img = Image::make(public_path('upload/temp/' . $imageName));
 
             // Resize and save thumbnail
-            $img->cover(400, 450);
+            $img->fit(400, 450);
             $img->save(public_path('upload/temp/thumb_' . $imageName));
-            
         } catch (\Throwable $e) {
             Log::error('Thumbnail generation failed: ' . $e->getMessage());
         }

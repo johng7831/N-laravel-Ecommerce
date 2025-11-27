@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Product;
 use App\Models\Tempimages;
 use App\Models\ProductImage;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductController extends Controller
 {
@@ -63,43 +61,53 @@ class ProductController extends Controller
         $product->status            = $request->status;
         $product->save();
 
-        // ---------------------------
         // Save product images
-        // ---------------------------
         if (!empty($request->gallery)) {
 
-            foreach ($request->gallery as $tempImageId) {
+            foreach ($request->gallery as $key => $tempImageId) {
 
                 $tempImage = Tempimages::find($tempImageId);
+                if (!$tempImage) continue;
 
-                if ($tempImage) {
+                // Extract extension
+                $ext = pathinfo($tempImage->name, PATHINFO_EXTENSION);
 
-                    $originalPath  = public_path('upload/temp/' . $tempImage->name);
-                    $thumbPathTemp = public_path('upload/temp/thumb_' . $tempImage->name);
+                // New image name
+                $newImageName = time() . rand(1000, 9999) . '.' . $ext;
 
-                    $newImageName = time() . rand(1000, 9999) . '.jpg';
+                $originalPath = public_path('upload/temp/' . $tempImage->name);
+                $thumbPathTemp = public_path('upload/temp/thumb_' . $tempImage->name);
 
-                    // Create product folder if not exists
-                    $productFolder = public_path('upload/products/');
-                    if (!file_exists($productFolder)) {
-                        mkdir($productFolder, 0777, true);
-                    }
-
-                    // Move main image
-                    rename($originalPath, $productFolder . $newImageName);
-
-                    // Move thumbnail
-                    rename($thumbPathTemp, $productFolder . 'thumb_' . $newImageName);
-
-                    // Save in product_images table
-                    $productImage = new ProductImage();
-                    $productImage->product_id = $product->id;
-                    $productImage->image = $newImageName;
-                    $productImage->save();
-
-                    // Delete temp image record
-                    $tempImage->delete();
+                // If this is the FIRST image, save it as MAIN product image
+                if ($key == 0) {
+                    $product->image = $newImageName;
+                    $product->save();
                 }
+
+                // Create products folder if not exists
+                $productFolder = public_path('upload/products/');
+                if (!file_exists($productFolder)) {
+                    mkdir($productFolder, 0777, true);
+                }
+
+                // Move main image
+                if (file_exists($originalPath)) {
+                    rename($originalPath, $productFolder . $newImageName);
+                }
+
+                // Move thumbnail
+                if (file_exists($thumbPathTemp)) {
+                    rename($thumbPathTemp, $productFolder . 'thumb_' . $newImageName);
+                }
+
+                // Save to product_images table
+                $productImage = new ProductImage();
+                $productImage->product_id = $product->id;
+                $productImage->image = $newImageName;
+                $productImage->save();
+
+                // Delete temp image record
+                $tempImage->delete();
             }
         }
 
@@ -110,7 +118,7 @@ class ProductController extends Controller
         ]);
     }
 
-    // Return a single product
+    // Return single product
     public function show($id)
     {
         $product = Product::with('images')->find($id);
@@ -200,3 +208,4 @@ class ProductController extends Controller
         ]);
     }
 }
+

@@ -15,6 +15,9 @@ import EditCategory from './components/admin/category/Edit.jsx'
 import ShowBrand from './components/admin/brand/Show.jsx'
 import CreateBrand from './components/admin/brand/Create.jsx'
 import EditBrand from './components/admin/brand/Edit.jsx'
+import ShowProduct from './components/admin/product/Show.jsx'
+import CreateProduct from './components/admin/product/Create.jsx'
+import EditProduct from './components/admin/product/Edit.jsx'
 
 function App() {
   return (
@@ -68,8 +71,23 @@ function App() {
                 <EditBrand />
               </AdminRequireAuth>
             } />
+            <Route path='/admin/products' element={
+              <AdminRequireAuth>
+                <ShowProduct />
+              </AdminRequireAuth>
+            } />
+            <Route path='/admin/products/create' element={
+              <AdminRequireAuth>
+                <CreateProduct />
+              </AdminRequireAuth>
+            } />
+            <Route path='/admin/products/:id/edit' element={
+              <AdminRequireAuth>
+                <EditProduct />
+              </AdminRequireAuth>
+            } />
           </Routes>
-
+   
 
         </BrowserRouter>
       </AdminAuthProvider>
