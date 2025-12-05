@@ -7,6 +7,7 @@ import Shop from './components/common/Shop.jsx'
 import Product from './components/common/product.jsx'
 import Cart from './components/common/cart.jsx'
 import Checkout from './components/common/checkout.jsx'
+import OrderConfirmed from './components/common/OrderConfirmed.jsx'
 import Login from './components/common/Login.jsx'
 import Register from './components/common/Register.jsx'
 import CustomerLogin from './components/common/CustomerLogin.jsx'
@@ -35,6 +36,7 @@ function App() {
               <Route path='/product/:id' element={<Product />} />
               <Route path='/cart' element={<Cart />} />
               <Route path='/checkout' element={<Checkout />} />
+              <Route path='/order/confirmed/:id' element={<OrderConfirmed />} />
               <Route path='/register' element={<Register />} />
               <Route path='/login' element={<CustomerLogin />} />
               <Route path='/account/dashboard' element={<AccountDashboard />} />

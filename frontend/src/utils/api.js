@@ -9,5 +9,22 @@ const api = axios.create({
   },
 });
 
+// Add request interceptor to include token
+api.interceptors.request.use(
+  (config) => {
+    const customerInfo = localStorage.getItem('customerInfo');
+    if (customerInfo) {
+      const user = JSON.parse(customerInfo);
+      if (user.token) {
+        config.headers.Authorization = `Bearer ${user.token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export default api;
 

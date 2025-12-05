@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\TempImageController;
 use App\Http\Controllers\front\ProductController as FrontProductController;
 use App\Http\Controllers\front\AccountController;
+use App\Http\Controllers\front\OrderController;
 
 // Public Routes
 Route::post('/admin/login', [AuthController::class, 'authenticate']);
@@ -24,12 +25,17 @@ Route::post('/register', [AccountController::class, 'register']);
 Route::post('/login', [AccountController::class, 'authenticate']);
 
 
+// Save Order protected route
+Route::middleware('auth:sanctum','checkCustomer')->group(function () {
+    Route::post('/save-order', [OrderController::class, 'saveOrder']);
+    Route::get('/order/{id}', [OrderController::class, 'getOrder']);
+});
 
 // Temp Image upload (public)
 Route::post('/temp-images', [TempImageController::class, 'store']);
 
 // Protected Routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum','checkAdmin')->group(function () {
 
     // Category CRUD Routes
     Route::get('/categories', [CategoryController::class, 'index']);

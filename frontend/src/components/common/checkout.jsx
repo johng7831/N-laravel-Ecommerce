@@ -4,6 +4,7 @@ import Layout from './Layout'
 import FeaturedProduct from './FeaturedProduct'
 import { useCart } from '../../context/CartContext'
 import { CustomerAuthContext } from '../../context/CustomerAuth'
+import api from '../../utils/api'
 import './Shop.css'
 
 const Checkout = () => {
@@ -20,6 +21,8 @@ const Checkout = () => {
     phone: ''
   })
   const [paymentMethod, setPaymentMethod] = useState('cod')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!user) {
@@ -42,14 +45,60 @@ const Checkout = () => {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Here you would typically send the order data to your backend
-    console.log('Order submitted:', { formData, paymentMethod, cartItems })
-    // Clear cart after order submission
-    clearCart()
-    // Navigate to a success page or home
-    navigate('/')
+    setError('')
+    setLoading(true)
+
+    try {
+      // Prepare order items
+      const items = cartItems.map(item => ({
+        product_id: item.id,
+        quantity: item.quantity,
+        price: item.price,
+        name: item.title || item.name || '',
+        image: item.image || '',
+        size: item.size || '',
+        color: item.color || ''
+      }))
+
+      // Calculate shipping
+      const subtotal = getCartTotal()
+      const shipping = 5.00 // Default shipping
+      const totalPrice = subtotal + shipping
+
+      // Prepare order data
+      const orderData = {
+        items: items,
+        name: formData.name,
+        email: formData.email,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        phone: formData.phone,
+        payment_method: paymentMethod,
+        shipping: shipping,
+        total_price: totalPrice
+      }
+
+      // Call API to save order
+      const response = await api.post('/save-order', orderData)
+
+      if (response.data && response.data.order_id) {
+        // Clear cart after successful order
+        clearCart()
+        // Navigate to thank you page with order ID
+        navigate(`/order/confirmed/${response.data.order_id}`)
+      } else {
+        setError('Failed to place order. Please try again.')
+      }
+    } catch (err) {
+      console.error('Order submission error:', err)
+      setError(err.response?.data?.message || 'Failed to place order. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (!user) {
@@ -211,16 +260,33 @@ const Checkout = () => {
               </div>
 
               <div className="checkout-total">
-                <span className="total-label">Total:</span>
-                <span className="total-amount">${getCartTotal().toFixed(2)}</span>
+                <div className="checkout-total-row">
+                  <span className="total-label">Subtotal:</span>
+                  <span className="total-amount">${getCartTotal().toFixed(2)}</span>
+                </div>
+                <div className="checkout-total-row">
+                  <span className="total-label">Shipping:</span>
+                  <span className="total-amount">$5.00</span>
+                </div>
+                <div className="checkout-total-row checkout-grand-total">
+                  <span className="total-label">Total:</span>
+                  <span className="total-amount">${(getCartTotal() + 5.00).toFixed(2)}</span>
+                </div>
               </div>
+
+              {error && (
+                <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
+                  {error}
+                </div>
+              )}
 
               <button
                 type="submit"
                 className="pay-now-button"
                 onClick={handleSubmit}
+                disabled={loading}
               >
-                Pay Now
+                {loading ? 'Processing...' : 'Pay Now'}
               </button>
             </div>
           </div>
