@@ -5,13 +5,16 @@ namespace App\Http\Controllers\front;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Order;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AccountController extends Controller
 {
+    // ======================
     // User Registration
+    // ======================
     public function register(Request $request)
     {
         $rules = [
@@ -43,7 +46,9 @@ class AccountController extends Controller
         ], 200);
     }
 
+    // ======================
     // User Login
+    // ======================
     public function authenticate(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -58,7 +63,7 @@ class AccountController extends Controller
             ], 400);
         }
 
-        // Check user and password
+        // Check user credentials
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 
             $user = User::find(Auth::user()->id);
@@ -75,10 +80,44 @@ class AccountController extends Controller
             ], 200);
         }
 
-        // Wrong email/password
         return response()->json([
             'status' => 401,
             'message' => 'Invalid email or password',
         ], 401);
+    }
+
+    // ======================
+    // Get Order Details
+    // ======================
+    public function getOrdersdetail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'order_id' => 'required|exists:orders,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        $order = Order::where('user_id', $request->user_id)
+            ->where('id', $request->order_id)
+            ->with('items') // if you have relation
+            ->first();
+
+        if (!$order) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Order not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'order' => $order,
+        ], 200);
     }
 }

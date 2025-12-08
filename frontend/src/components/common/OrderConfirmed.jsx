@@ -35,6 +35,7 @@ const OrderConfirmed = () => {
   const formatDate = (dateString) => {
     if (!dateString) return ''
     const date = new Date(dateString)
+<<<<<<< HEAD
     return date.toLocaleDateString('en-GB', { 
       day: 'numeric', 
       month: 'short', 
@@ -45,12 +46,33 @@ const OrderConfirmed = () => {
   const calculateSubtotal = () => {
     if (!order || !order.order_items) return 0
     return order.order_items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+=======
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`
+  }
+
+  const calculateSubtotal = () => {
+    if (!order) return 0
+    const items = order.order_items || order.orderItems || []
+    return items.reduce((sum, item) => {
+      const price = Number(item.price) || 0
+      const quantity = Number(item.quantity) || 0
+      return sum + (price * quantity)
+    }, 0)
+>>>>>>> e22b441 (Initial project commit)
   }
 
   const calculateShipping = () => {
     if (!order) return 0
     const subtotal = calculateSubtotal()
+<<<<<<< HEAD
     return order.total_price - subtotal
+=======
+    return Number(order.total_price) - subtotal
+>>>>>>> e22b441 (Initial project commit)
   }
 
   if (loading) {
@@ -82,7 +104,11 @@ const OrderConfirmed = () => {
 
   const subtotal = calculateSubtotal()
   const shipping = calculateShipping()
+<<<<<<< HEAD
   const grandTotal = order.total_price
+=======
+  const grandTotal = Number(order.total_price) || 0
+>>>>>>> e22b441 (Initial project commit)
 
   return (
     <Layout>
@@ -90,30 +116,58 @@ const OrderConfirmed = () => {
         <div className="order-confirmed-container">
           <div className="thank-you-section">
             <h1 className="thank-you-title">Thank You!</h1>
+<<<<<<< HEAD
             <p className="thank-you-message">You have successfully placed your order.</p>
           </div>
 
           <div className="order-summary-card">
+=======
+            <p className="thank-you-message">Your order has been successfully placed.</p>
+          </div>
+
+          <div className="order-summary-card">
+            <h2 className="order-summary-title">Order Summary</h2>
+            
+>>>>>>> e22b441 (Initial project commit)
             <div className="order-summary-content">
               <div className="order-details-section">
                 <div className="order-detail-item">
                   <span className="order-detail-label">Order ID:</span>
                   <span className="order-detail-value">#{order.id}</span>
                 </div>
+<<<<<<< HEAD
                 <div className="order-detail-item">
                   <span className="order-detail-label">Order Date:</span>
                   <span className="order-detail-value">{formatDate(order.created_at)}</span>
                 </div>
+=======
+
+                <div className="order-detail-item">
+                  <span className="order-detail-label">Date:</span>
+                  <span className="order-detail-value">{formatDate(order.created_at)}</span>
+                </div>
+
+>>>>>>> e22b441 (Initial project commit)
                 <div className="order-detail-item">
                   <span className="order-detail-label">Status:</span>
                   <span className={`order-status order-status-${order.status.toLowerCase()}`}>
                     {order.status}
                   </span>
                 </div>
+<<<<<<< HEAD
                 <div className="order-detail-item">
                   <span className="order-detail-label">Payment:</span>
                   <span className="order-detail-value">
                     {order.payment_method === 'cod' ? 'Cash On Delivery' : order.payment_method}
+=======
+
+                <div className="order-detail-item">
+                  <span className="order-detail-label">Payment Method:</span>
+                  <span className="order-detail-value">
+                    {order.payment_method === 'cod'
+                      ? 'COD'
+                      : order.payment_method.toUpperCase()}
+>>>>>>> e22b441 (Initial project commit)
                   </span>
                 </div>
               </div>
@@ -123,12 +177,23 @@ const OrderConfirmed = () => {
                   <span className="customer-info-label">Customer:</span>
                   <span className="customer-info-value">{order.name}</span>
                 </div>
+<<<<<<< HEAD
                 <div className="customer-info-item">
                   <span className="customer-info-label">Address:</span>
                   <span className="customer-info-value">
                     {order.address}, {order.city}, {order.state}, {order.zip}
                   </span>
                 </div>
+=======
+
+                <div className="customer-info-item">
+                  <span className="customer-info-label">Address:</span>
+                  <span className="customer-info-value">
+                    {order.address || 'dummy address'}
+                  </span>
+                </div>
+
+>>>>>>> e22b441 (Initial project commit)
                 <div className="customer-info-item">
                   <span className="customer-info-label">Contact:</span>
                   <span className="customer-info-value">{order.phone}</span>
@@ -143,6 +208,7 @@ const OrderConfirmed = () => {
                     <th>Item</th>
                     <th>Quantity</th>
                     <th>Price</th>
+<<<<<<< HEAD
                   </tr>
                 </thead>
                 <tbody>
@@ -153,12 +219,33 @@ const OrderConfirmed = () => {
                       <td>${(item.price * item.quantity).toFixed(2)}</td>
                     </tr>
                   ))}
+=======
+                    <th>Total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {(order.order_items || order.orderItems || []).map((item) => {
+                    const price = Number(item.price) || 0
+                    const quantity = Number(item.quantity) || 0
+
+                    return (
+                      <tr key={item.id}>
+                        <td>{item.name || 'Product 1'}</td>
+                        <td>{quantity}</td>
+                        <td>${price.toFixed(2)}</td>
+                        <td>${(price * quantity).toFixed(2)}</td>
+                      </tr>
+                    )
+                  })}
+>>>>>>> e22b441 (Initial project commit)
                 </tbody>
               </table>
             </div>
 
             <div className="order-pricing-section">
               <div className="pricing-row">
+<<<<<<< HEAD
                 <span className="pricing-label">Subtotal:</span>
                 <span className="pricing-value">${subtotal.toFixed(2)}</span>
               </div>
@@ -169,6 +256,20 @@ const OrderConfirmed = () => {
               <div className="pricing-row pricing-grand-total">
                 <span className="pricing-label">Grand Total:</span>
                 <span className="pricing-value">${grandTotal.toFixed(2)}</span>
+=======
+                <span className="pricing-label">Subtotal</span>
+                <span className="pricing-value">${Number(subtotal).toFixed(2)}</span>
+              </div>
+
+              <div className="pricing-row">
+                <span className="pricing-label">Shipping</span>
+                <span className="pricing-value">${Number(shipping).toFixed(2)}</span>
+              </div>
+
+              <div className="pricing-row pricing-grand-total">
+                <span className="pricing-label">Grand Total</span>
+                <span className="pricing-value">${Number(grandTotal).toFixed(2)}</span>
+>>>>>>> e22b441 (Initial project commit)
               </div>
             </div>
           </div>
@@ -176,10 +277,18 @@ const OrderConfirmed = () => {
           <div className="order-actions">
             <button
               onClick={() => navigate(`/account/dashboard`)}
+<<<<<<< HEAD
               className="view-order-details-button"
             >
               View Order Details
             </button>
+=======
+              className="order-details-button"
+            >
+              Order Details
+            </button>
+
+>>>>>>> e22b441 (Initial project commit)
             <button
               onClick={() => navigate('/shop')}
               className="continue-shopping-button"
@@ -188,6 +297,10 @@ const OrderConfirmed = () => {
             </button>
           </div>
         </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> e22b441 (Initial project commit)
         <FeaturedProduct />
       </div>
     </Layout>
@@ -195,4 +308,7 @@ const OrderConfirmed = () => {
 }
 
 export default OrderConfirmed
+<<<<<<< HEAD
 
+=======
+>>>>>>> e22b441 (Initial project commit)

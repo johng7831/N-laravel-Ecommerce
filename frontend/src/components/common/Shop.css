@@ -617,6 +617,22 @@
   box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1);
 }
 
+.form-group input.input-error {
+  border-color: #ef4444;
+}
+
+.form-group input.input-error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2514,13 +2530,21 @@
 .thank-you-title {
   font-size: 48px;
   font-weight: 700;
+<<<<<<< HEAD
   color: #3b82f6;
+=======
+  color: #22c55e;
+>>>>>>> e22b441 (Initial project commit)
   margin: 0 0 16px 0;
 }
 
 .thank-you-message {
   font-size: 18px;
+<<<<<<< HEAD
   color: #374151;
+=======
+  color: #6b7280;
+>>>>>>> e22b441 (Initial project commit)
   margin: 0;
 }
 
@@ -2532,6 +2556,16 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+<<<<<<< HEAD
+=======
+.order-summary-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 24px 0;
+}
+
+>>>>>>> e22b441 (Initial project commit)
 .order-summary-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2583,6 +2617,12 @@
 .order-status-pending {
   background-color: #fef3c7;
   color: #92400e;
+<<<<<<< HEAD
+=======
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+>>>>>>> e22b441 (Initial project commit)
 }
 
 .order-items-section {
@@ -2668,8 +2708,29 @@
   flex-wrap: wrap;
 }
 
+<<<<<<< HEAD
 .view-order-details-button {
   background-color: #3b82f6;
+=======
+.order-details-button {
+  background-color: #60a5fa;
+  color: #ffffff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.order-details-button:hover {
+  background-color: #3b82f6;
+}
+
+.view-order-details-button {
+  background-color: #60a5fa;
+>>>>>>> e22b441 (Initial project commit)
   color: #ffffff;
   border: none;
   padding: 12px 32px;
@@ -2681,7 +2742,11 @@
 }
 
 .view-order-details-button:hover {
+<<<<<<< HEAD
   background-color: #2563eb;
+=======
+  background-color: #3b82f6;
+>>>>>>> e22b441 (Initial project commit)
 }
 
 .continue-shopping-button {
