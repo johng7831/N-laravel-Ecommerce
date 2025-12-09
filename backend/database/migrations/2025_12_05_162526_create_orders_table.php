@@ -13,18 +13,15 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('product_id')->nullable()->constrained('products');
 
-            $table->integer('quantity')->nullable();
             $table->decimal('total_price', 10, 2);
 
             $table->string('status');
             $table->string('payment_method');
             $table->string('payment_status');
-            $table->string('payment_url');
-            $table->string('payment_id');
+            $table->string('payment_url')->nullable();
+            $table->string('payment_id')->nullable();
 
-            // Shipping details
             $table->string('address');
             $table->string('city');
             $table->string('state');

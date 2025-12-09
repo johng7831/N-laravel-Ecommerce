@@ -47,8 +47,6 @@ class Kernel extends HttpKernel
     /**
      * The application's route middleware.
      *
-     * These middleware may be assigned to groups or used individually.
-     *
      * @var array<string, class-string|string>
      */
     protected $routeMiddleware = [
@@ -62,14 +60,14 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-<<<<<<< HEAD
-=======
+
+        // Custom Middleware
         'admin' => \App\Http\Middleware\CheckAdmin::class,
         'customer' => \App\Http\Middleware\CheckUser::class,
->>>>>>> e22b441 (Initial project commit)
         'checkAdmin' => \App\Http\Middleware\CheckAdmin::class,
         'checkCustomer' => \App\Http\Middleware\CheckCustomer::class,
         'checkUser' => \App\Http\Middleware\CheckUser::class,
+
         'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
     ];
 }

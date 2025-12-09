@@ -9,75 +9,109 @@ use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
+    /**
+     * Save Order
+     */
     public function saveOrder(Request $request)
     {
-        if (empty($request->items)) {
+        $validated = $request->validate([
+            'items'                => 'required|array|min:1',
+            'items.*.product_id'   => 'required|integer',
+            'items.*.quantity'     => 'required|integer|min:1',
+            'items.*.price'        => 'required|numeric|min:0',
+
+            'name'                 => 'required|string|max:255',
+            'email'                => 'required|email',
+            'address'              => 'required|string|max:500',
+            'city'                 => 'required|string|max:255',
+            'state'                => 'required|string|max:255',
+            'zip'                  => 'required|string|max:50',
+            'phone'                => 'required|string|max:50',
+
+            'payment_method'       => 'nullable|string|in:cod,stripe',
+            'shipping'             => 'nullable|numeric|min:0',
+        ]);
+
+        if (empty($validated['items'])) {
             return response()->json(['message' => 'Your Cart is Empty'], 400);
         }
 
-        // Calculate total price from items
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        // Calculate totals
         $subtotal = 0;
-        foreach ($request->items as $item) {
+        foreach ($validated['items'] as $item) {
             $subtotal += $item['price'] * $item['quantity'];
         }
-        $shipping = $request->shipping ?? 5.00; // Default shipping
+
+        $shipping = $validated['shipping'] ?? 5.00;
         $totalPrice = $subtotal + $shipping;
 
-        // Create a new order
-        $order = new Order();
-        $order->user_id = auth()->user()->id;
-        $order->total_price = $totalPrice;
-        $order->status = 'Pending';
-        $order->payment_method = $request->payment_method ?? 'cod';
-        $order->payment_status = $request->payment_method === 'cod' ? 'pending' : 'pending';
-        $order->payment_url = '';
-        $order->payment_id = '';
-        $order->address = $request->address;
-        $order->city = $request->city;
-        $order->state = $request->state;
-        $order->zip = $request->zip;
-        $order->phone = $request->phone;
-        $order->email = $request->email;
-        $order->name = $request->name;
-        $order->save();
+        // Save order
+        $order = Order::create([
+            'user_id'        => $user->id,
+            'total_price'    => $totalPrice,
+            'status'         => 'Pending',
+            'payment_method' => $validated['payment_method'] ?? 'cod',
+            'payment_status' => 'pending',
+            'payment_url'    => '',
+            'payment_id'     => '',
+            'address'        => $validated['address'],
+            'city'           => $validated['city'],
+            'state'          => $validated['state'],
+            'zip'            => $validated['zip'],
+            'phone'          => $validated['phone'],
+            'email'          => $validated['email'],
+            'name'           => $validated['name'],
+        ]);
 
         // Save order items
-        foreach ($request->items as $item) {
-            $orderItem = new OrderItem();
-            $orderItem->order_id = $order->id;
-            $orderItem->product_id = $item['product_id'];
-            $orderItem->quantity = $item['quantity'];
-            $orderItem->price = $item['price'];
-            $orderItem->total_price = $item['price'] * $item['quantity'];
-            $orderItem->size = $item['size'] ?? '';
-            $orderItem->color = $item['color'] ?? '';
-            $orderItem->image = $item['image'] ?? '';
-            $orderItem->name = $item['name'] ?? '';
-            $orderItem->save();
+        foreach ($validated['items'] as $item) {
+            OrderItem::create([
+                'order_id'    => $order->id,
+                'product_id'  => $item['product_id'],
+                'quantity'    => $item['quantity'],
+                'price'       => $item['price'],
+                'total_price' => $item['price'] * $item['quantity'],
+                'size'        => $item['size'] ?? '',
+                'color'       => $item['color'] ?? '',
+                'image'       => $item['image'] ?? '',
+                'name'        => $item['name'] ?? '',
+            ]);
         }
 
         return response()->json([
-            'message' => 'Order placed successfully!',
+            'message'  => 'Order placed successfully!',
             'order_id' => $order->id,
-            'order' => $order
+            'order'    => $order->load('orderItems'),
         ], 200);
     }
 
+    /**
+     * Get Order Detail by ID
+     */
     public function getOrder($id)
     {
-        $order = Order::with('orderItems')->find($id);
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $order = Order::with('orderItems')
+            ->where('id', $id)
+            ->where('user_id', $user->id)
+            ->first();
 
         if (!$order) {
             return response()->json(['message' => 'Order not found'], 404);
         }
 
-        // Check if the order belongs to the authenticated user
-        if ($order->user_id !== auth()->user()->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
         return response()->json([
-            'order' => $order
+            'message' => 'Order details retrieved successfully',
+            'order'   => $order,
         ], 200);
     }
 }

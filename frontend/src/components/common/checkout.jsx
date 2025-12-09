@@ -1,3 +1,4 @@
+
 import React, { useState, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Layout from './Layout'
@@ -298,4 +299,3 @@ const Checkout = () => {
 }
 
 export default Checkout
-

@@ -18,16 +18,11 @@ class OrderItem extends Model
         'size',
         'color',
         'image',
-        'name'
+        'name',
     ];
 
     public function order()
     {
         return $this->belongsTo(Order::class);
-    }
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
     }
 }

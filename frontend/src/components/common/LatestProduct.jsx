@@ -31,7 +31,8 @@ const LatestProduct = () => {
     if (product.images && product.images.length > 0) {
       return `http://localhost:8000/upload/products/thumb_${product.images[0].image}`;
     }
-    return 'https://via.placeholder.com/300x300?text=No+Image';
+    // Fallback image if nothing is available
+    return 'https://placehold.co/300x300?text=No+Image';
   };
 
   // Don't render section if no products available (after loading)
@@ -57,7 +58,7 @@ const LatestProduct = () => {
                   alt={p.title} 
                   className="product-image"
                   onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/300x300?text=No+Image';
+                    e.target.src = 'https://placehold.co/300x300?text=No+Image';
                   }}
                 />
               </Link>

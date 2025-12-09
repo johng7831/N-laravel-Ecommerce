@@ -4,26 +4,30 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\User;
 
 class CheckCustomer
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next)
     {
-        // Get logged-in user
-        $user = User::find(auth()->id());
+        // THIS is how you correctly get the Sanctum authenticated user
+        $user = $request->user();  
 
-        // Check if user exists and has customer role (role = 'user' or 'customer')
-        if (!$user || ($user->role !== 'user' && $user->role !== 'customer')) {
+        if (!$user) {
             return response()->json([
-                'message' => 'Only customers can access this section'
+                'message' => 'Unauthenticated (no valid token)'
             ], 401);
+        }
+
+        // Allowed roles
+        $allowedRoles = ['customer', 'user'];
+
+        if (!in_array($user->role, $allowedRoles)) {
+            return response()->json([
+                'message' => 'Only customers can access this section',
+                'your_role' => $user->role
+            ], 403);
         }
 
         return $next($request);
     }
 }
-
