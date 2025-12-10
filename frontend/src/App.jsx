@@ -23,6 +23,8 @@ import EditBrand from './components/admin/brand/Edit.jsx'
 import ShowProduct from './components/admin/product/Show.jsx'
 import CreateProduct from './components/admin/product/Create.jsx'
 import EditProduct from './components/admin/product/Edit.jsx'
+import AdminOrders from './components/admin/order/Show.jsx'
+import ChangePassword from './components/admin/ChangePassword.jsx'
 
 function App() {
   return (
@@ -94,6 +96,16 @@ function App() {
             <Route path='/admin/products/:id/edit' element={
               <AdminRequireAuth>
                 <EditProduct />
+              </AdminRequireAuth>
+            } />
+            <Route path='/admin/orders' element={
+              <AdminRequireAuth>
+                <AdminOrders />
+              </AdminRequireAuth>
+            } />
+            <Route path='/admin/change-password' element={
+              <AdminRequireAuth>
+                <ChangePassword />
               </AdminRequireAuth>
             } />
           </Routes>

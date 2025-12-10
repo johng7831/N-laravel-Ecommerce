@@ -38,6 +38,7 @@ Route::post('/login', [AccountController::class, 'authenticate']);
 Route::middleware('auth:sanctum','checkCustomer')->group(function () {
     Route::post('/save-order', [OrderController::class, 'saveOrder']);
     Route::get('/get-order-details/{id}', [OrderController::class, 'getOrder']);
+    
 });
 
 // Temp Image upload (public)
@@ -52,7 +53,7 @@ Route::middleware('auth:sanctum','checkAdmin')->group(function () {
     Route::get('/categories/{id}', [CategoryController::class, 'show']);
     Route::put('/categories/{id}', [CategoryController::class, 'update']);
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
-
+   
 
     // Brand CRUD Routes
     Route::resource('brands', BrandController::class);
@@ -70,6 +71,9 @@ Route::middleware('auth:sanctum','checkAdmin')->group(function () {
     Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
     Route::get('/all-order-details', [AuthController::class, 'getAllOrder']);
+
+    // Admin password change
+    Route::post('/admin/change-password', [AuthController::class, 'changePassword']);
   
 });
 

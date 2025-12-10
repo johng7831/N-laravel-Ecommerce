@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Order;
 
@@ -86,6 +87,52 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'All orders retrieved successfully',
             'orders'  => $orders,
+        ], 200);
+    }
+
+    /**
+     * Change password for authenticated admin
+     */
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password'      => 'required',
+            'password'              => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        $user = $request->user();
+
+        // Ensure user exists and is admin (middleware should handle this)
+        if (!$user || $user->role !== 'admin') {
+            return response()->json([
+                'status'  => 401,
+                'message' => 'You are not authorized to perform this action',
+            ], 401);
+        }
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'status'  => 422,
+                'message' => 'Current password is incorrect',
+            ], 422);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Revoke existing tokens so user must log in again
+        $user->tokens()->delete();
+
+        return response()->json([
+            'status'  => 200,
+            'message' => 'Password updated successfully. Please log in again.',
         ], 200);
     }
 }
